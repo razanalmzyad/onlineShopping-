@@ -1,0 +1,103 @@
+public class ShoppingCart {
+    private static int NEXT=0;
+    
+    private int cartId;
+    private int productId[];
+    private String productName[];
+    private int quantity[];
+    private double unitPrice[];
+    private Date addedDate[];
+    private int size;
+    
+    
+    //checkout
+
+    public ShoppingCart() {
+        this.cartId=++NEXT;
+        productId=new int[100];
+        productName=new String[100];
+        quantity=new int[100];
+        unitPrice=new double[100];
+        addedDate=new Date[100];
+        size=0;
+    }
+    
+    public void add(Product pro,int qty,Date date){
+        productId[size]=pro.getProductId();
+        productName[size]=pro.getProductName();
+        unitPrice[size]=pro.getPrice();
+        quantity[size]=qty;
+        addedDate[size]=date;
+        size++;
+    }
+    
+    private boolean isRightId(int id){
+        for (int i = 0; i < size; i++) {
+            if (productId[i]==id) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void remove(int id){
+        if(size==0) return;
+        if(!isRightId(id)) return;
+        
+        int tempProductId[]=new int[size-1];
+        String tempProductName[]=new String[size-1];
+        int tempQuantity[]=new int[size-1];
+        double tempUnitPrice[]=new double[size-1];
+        Date tempAddedDate[]=new Date[size-1];
+        int j=0;
+        for (int i = 0; i < size; i++) {
+            if (productId[i]!=id) {
+                tempProductId[j]=productId[i];
+                tempProductName[j]=productName[i];
+                tempQuantity[j]=quantity[i];
+                tempUnitPrice[j]=unitPrice[i];
+                tempAddedDate[j]=addedDate[i];
+                j++;
+            }   
+        }
+        
+        for (int i = 0; i < tempProductId.length; i++) {
+            productId[i]=tempProductId[i];
+            productName[i]=tempProductName[i];
+            quantity[i]=tempQuantity[i];
+            unitPrice[i]=tempUnitPrice[i];
+            addedDate[i]=tempAddedDate[i];
+        }
+        size--;
+    }
+    
+    public void showCart(){
+        System.out.println("Your Shopping Cart Contents:");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.printf("ID\tProduct Name\t\tPrice\t\tQuantity\tAdded Date\n");
+        double total=0.0;
+        for (int i = 0; i < size; i++) {
+            System.out.printf("%d\t%s\t\t\t%.2f\t\t%d\t\t",productId[i],productName[i],unitPrice[i],quantity[i]);
+            System.out.println(addedDate[i]);
+            total+=unitPrice[i]*quantity[i];
+        }
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.printf("Total:%.2f\n",total);
+        System.out.println("-------------------------------------------------------------------------------------------");
+    }
+    
+    public double getTotal(){
+        double r=0.0;
+        for (int i = 0; i < size; i++) {
+            r+=unitPrice[i]*quantity[i];;
+        }
+        return r;
+    }
+    public Order checkout(){
+        Date d=new Date();
+        System.out.println("Enter Checkout date:");
+        d.read();
+        
+        return (new Order(d,this));
+    }
+}
